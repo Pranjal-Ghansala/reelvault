@@ -5,6 +5,7 @@ import {
   discoverMoviesController,
   searchMoviesController,
   getMovieDetailsController,
+  getSimilarMoviesController,
 } from "../controllers/movieController.js";
 
 import { validate } from "../middleware/validate.js";
@@ -61,5 +62,25 @@ router.get(
   validate(movieIdSchema, "params"),
   getMovieDetailsController
 );
+
+
+router.get(
+  "/:id/similar",
+  validate(
+    z.object({
+      id: z.coerce.number().int().positive(),
+    }),
+    "params"
+  ),
+  validate(
+    z.object({
+      page: z.coerce.number().int().min(1).max(500).default(1),
+    }),
+    "query"
+  ),
+  getSimilarMoviesController
+);
+
+
 
 export default router;

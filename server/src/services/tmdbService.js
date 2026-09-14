@@ -136,3 +136,11 @@ export function getMovieDetails(movieId) {
     append_to_response: "credits",
   });
 }
+
+
+export function getSimilarMovies(movieId, page = 1) {
+  return tmdbRequest(`/movie/${movieId}/similar`, {
+    page,
+  });
+}
+

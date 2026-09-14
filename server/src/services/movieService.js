@@ -2,6 +2,7 @@ import {
   discoverMovies as tmdbDiscoverMovies,
   searchMovies as tmdbSearchMovies,
   getMovieDetails as tmdbGetMovieDetails,
+   getSimilarMovies as tmdbGetSimilarMovies,
 } from "./tmdbService.js";
 
 import {
@@ -220,3 +221,35 @@ export async function getMovieDetails(movieId) {
     return result;
   });
 }
+
+export async function getSimilarMovies(movieId, page = 1) {
+  const cacheKey = `similar:${movieId}:${page}`;
+
+  const cached = getCached(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const result = await dedupeRequest(cacheKey, async () => {
+    const response = await tmdbGetSimilarMovies(movieId, page);
+
+    const data = (response.results || []).map(normalizeMovie);
+
+    const normalized = {
+      data,
+      pagination: {
+        page: response.page || page,
+        totalPages: response.total_pages || 0,
+        totalResults: response.total_results || 0,
+      },
+    };
+
+    setCached(cacheKey, normalized, 10 * 60 * 1000);
+
+    return normalized;
+  });
+
+  return result;
+}
+
