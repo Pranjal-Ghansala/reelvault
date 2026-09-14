@@ -1,6 +1,7 @@
+
 import { env } from "../config/env.js";
 
-const TMDB_TIMEOUT_MS = 8000;
+const TMDB_TIMEOUT_MS = env.TMDB_TIMEOUT_MS;
 
 async function tmdbRequest(path, params = {}) {
   const searchParams = new URLSearchParams();
@@ -136,7 +137,6 @@ export function getMovieDetails(movieId) {
     append_to_response: "credits",
   });
 }
-
 
 export function getSimilarMovies(movieId, page = 1) {
   return tmdbRequest(`/movie/${movieId}/similar`, {

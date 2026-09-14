@@ -229,7 +229,7 @@ function MovieDetailsPage() {
       </div>
 
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8 lg:py-16">
-        <main>
+        <main className="min-w-0">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400">
               The story
@@ -246,7 +246,7 @@ function MovieDetailsPage() {
           </div>
 
           {movie.cast?.length > 0 && (
-            <section className="mt-14">
+            <section className="mt-14 min-w-0">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400">
                   The cast
@@ -257,29 +257,29 @@ function MovieDetailsPage() {
                 </h2>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {movie.cast.map((person) => (
                   <div
                     key={person.id || person.name}
-                    className="group rounded-xl border border-white/10 bg-white/[0.03] p-3 transition hover:border-white/15 hover:bg-white/[0.05]"
+                    className="group min-w-0 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] transition hover:border-white/15 hover:bg-white/[0.05]"
                   >
-                    <div className="overflow-hidden rounded-lg bg-white/5">
+                    <div className="overflow-hidden bg-white/5">
                       {person.profileUrl ? (
                         <img
                           src={person.profileUrl}
                           alt={person.name}
                           loading="lazy"
                           decoding="async"
-                          className="aspect-[3/4] w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                          className="aspect-[3/4] h-auto w-full object-cover object-top transition duration-300 group-hover:scale-[1.03]"
                         />
                       ) : (
-                        <div className="flex aspect-[3/4] items-center justify-center text-xs text-white/30">
+                        <div className="flex aspect-[3/4] w-full items-center justify-center text-xs text-white/30">
                           No photo
                         </div>
                       )}
                     </div>
 
-                    <div className="mt-3">
+                    <div className="min-w-0 p-3">
                       <p className="truncate text-sm font-semibold text-white">
                         {person.name}
                       </p>
@@ -295,6 +295,7 @@ function MovieDetailsPage() {
               </div>
             </section>
           )}
+
           <SimilarMovies movieId={movie.id} />
         </main>
 
@@ -309,6 +310,7 @@ function MovieDetailsPage() {
                 <dt className="text-xs text-white/35">
                   Release date
                 </dt>
+
                 <dd className="mt-1 text-sm text-white/80">
                   {movie.releaseDate}
                 </dd>
@@ -320,6 +322,7 @@ function MovieDetailsPage() {
                 <dt className="text-xs text-white/35">
                   Runtime
                 </dt>
+
                 <dd className="mt-1 text-sm text-white/80">
                   {movie.runtime} minutes
                 </dd>
@@ -331,6 +334,7 @@ function MovieDetailsPage() {
                 <dt className="text-xs text-white/35">
                   Rating
                 </dt>
+
                 <dd className="mt-1 text-sm font-semibold text-amber-300">
                   ★ {movie.rating.toFixed(1)} / 10
                 </dd>
@@ -342,6 +346,7 @@ function MovieDetailsPage() {
                 <dt className="text-xs text-white/35">
                   Genres
                 </dt>
+
                 <dd className="mt-2 flex flex-wrap gap-2">
                   {movie.genres.map((genre) => (
                     <span
@@ -362,4 +367,3 @@ function MovieDetailsPage() {
 }
 
 export default MovieDetailsPage;
-

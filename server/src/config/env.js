@@ -1,11 +1,30 @@
+
 import { z } from "zod";
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(5000),
-  CLIENT_URL: z.string().url().default("http://localhost:5173"),
+
+  CLIENT_URL: z
+    .string()
+    .url()
+    .default("http://localhost:5173"),
+
   DATABASE_URL: z.string().min(1),
+
   TMDB_API_KEY: z.string().min(1),
-  TMDB_BASE_URL: z.string().url().default("https://api.themoviedb.org/3"),
+
+  TMDB_BASE_URL: z
+    .string()
+    .url()
+    .default("https://api.themoviedb.org/3"),
+
+  TMDB_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .min(1000)
+    .max(60000)
+    .default(15000),
+
   COOKIE_SECRET: z.string().min(32),
 });
 
@@ -18,3 +37,4 @@ if (!result.success) {
 }
 
 export const env = result.data;
+

@@ -253,3 +253,54 @@ export async function getSimilarMovies(movieId, page = 1) {
   return result;
 }
 
+
+export async function getHomepageMovies() {
+  const cacheKey = "homepage:movies";
+
+  const cached = getCached(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  const result = await dedupeRequest(cacheKey, async () => {
+    const [popularResponse, topRatedResponse, newestResponse] =
+      await Promise.all([
+        tmdbDiscoverMovies({
+          sort: "popularity",
+          page: 1,
+        }),
+
+        tmdbDiscoverMovies({
+          sort: "rating",
+          page: 1,
+        }),
+
+        tmdbDiscoverMovies({
+          sort: "newest",
+          page: 1,
+        }),
+      ]);
+
+    const normalized = {
+      popular: (popularResponse.results || [])
+        .map(normalizeMovie)
+        .slice(0, 10),
+
+      topRated: (topRatedResponse.results || [])
+        .map(normalizeMovie)
+        .slice(0, 10),
+
+      newest: (newestResponse.results || [])
+        .map(normalizeMovie)
+        .slice(0, 10),
+    };
+
+    setCached(cacheKey, normalized, 5 * 60 * 1000);
+
+    return normalized;
+  });
+
+  return result;
+}
+

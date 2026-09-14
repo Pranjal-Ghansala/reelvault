@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 
 import {
@@ -9,8 +10,10 @@ import FeaturedMovie from "../../components/movie/FeaturedMovie.jsx";
 import MovieGrid from "../../components/movie/MovieGrid.jsx";
 import MovieGridSkeleton from "../../components/feedback/MovieGridSkeleton.jsx";
 import DiscoveryControls from "../../components/filters/DiscoveryControls.jsx";
+import DiscoveryRow from "../../components/movie/DiscoveryRow.jsx";
 
 import { useDiscoverMovies } from "../../features/movies/useDiscoverMovies.js";
+import { useHomepageMovies } from "../../features/movies/useHomepageMovies.js";
 
 import {
   moviesRetryRequested,
@@ -80,6 +83,13 @@ function DiscoverPage() {
 
   useDiscoverMovies(filters, reloadToken);
 
+  const {
+    popular,
+    topRated,
+    newest,
+    loading: homepageLoading,
+  } = useHomepageMovies();
+
   function updateFilters(updates) {
     setFilters((current) => ({
       ...current,
@@ -117,6 +127,29 @@ function DiscoverPage() {
         <FeaturedMovie movie={items[0]} />
       )}
 
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <DiscoveryRow
+          eyebrow="Trending now"
+          title="Popular movies"
+          movies={popular}
+          loading={homepageLoading}
+        />
+
+        <DiscoveryRow
+          eyebrow="Highest rated"
+          title="Top rated"
+          movies={topRated}
+          loading={homepageLoading}
+        />
+
+        <DiscoveryRow
+          eyebrow="Fresh picks"
+          title="Recently released"
+          movies={newest}
+          loading={homepageLoading}
+        />
+      </div>
+
       <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <DiscoveryControls
           filters={filters}
@@ -134,7 +167,10 @@ function DiscoverPage() {
           />
 
           {status === "failed" && items.length === 0 && (
-            <div className="rounded-2xl border border-red-400/20 bg-red-400/5 px-6 py-12 text-center">
+            <div
+              role="alert"
+              className="rounded-2xl border border-red-400/20 bg-red-400/5 px-6 py-12 text-center"
+            >
               <p className="text-lg font-semibold text-white">
                 Movies couldn't be loaded
               </p>
@@ -152,62 +188,60 @@ function DiscoverPage() {
               <button
                 type="button"
                 onClick={handleRetry}
-                className="mt-6 rounded-lg bg-[#f5f1e8] px-4 py-2.5 text-sm font-semibold text-[#0d0d0f]"
+                className="mt-6 rounded-lg bg-[#f5f1e8] px-4 py-2.5 text-sm font-semibold text-[#0d0d0f] transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
               >
                 Try Again
               </button>
             </div>
           )}
 
-          {status === "loading" &&
-            items.length === 0 && (
-              <MovieGridSkeleton />
-            )}
+          {status === "loading" && items.length === 0 && (
+            <MovieGridSkeleton />
+          )}
 
-          {status === "loading" &&
-            items.length > 0 && (
-              <div
-                className="mb-4 text-sm text-white/40"
-                aria-live="polite"
+          {status === "loading" && items.length > 0 && (
+            <div
+              className="mb-4 text-sm text-white/40"
+              aria-live="polite"
+            >
+              Updating movies…
+            </div>
+          )}
+
+          {status === "failed" && items.length > 0 && (
+            <div
+              role="alert"
+              className="mb-6 rounded-lg border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-white/70"
+            >
+              <span>
+                We couldn't update the movies right now.
+              </span>
+
+              <button
+                type="button"
+                onClick={handleRetry}
+                className="ml-3 font-semibold text-amber-400 transition hover:text-amber-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
               >
-                Updating movies…
-              </div>
-            )}
+                Try Again
+              </button>
+            </div>
+          )}
 
-          {status === "failed" &&
-            items.length > 0 && (
-              <div className="mb-6 rounded-lg border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-white/70">
-                <span>
-                  We couldn't update the movies right now.
-                </span>
+          {status !== "failed" && items.length > 0 && (
+            <MovieGrid movies={items} />
+          )}
 
-                <button
-                  type="button"
-                  onClick={handleRetry}
-                  className="ml-3 font-semibold text-amber-400 hover:text-amber-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
-                >
-                  Try Again
-                </button>
-              </div>
-            )}
+          {status === "succeeded" && items.length === 0 && (
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-12 text-center">
+              <p className="text-lg font-semibold text-white">
+                No movies found
+              </p>
 
-          {status !== "failed" &&
-            items.length > 0 && (
-              <MovieGrid movies={items} />
-            )}
-
-          {status === "succeeded" &&
-            items.length === 0 && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-12 text-center">
-                <p className="text-lg font-semibold text-white">
-                  No movies found
-                </p>
-
-                <p className="mt-2 text-sm text-white/50">
-                  Try adjusting your filters or exploring another page.
-                </p>
-              </div>
-            )}
+              <p className="mt-2 text-sm text-white/50">
+                Try adjusting your filters or exploring another page.
+              </p>
+            </div>
+          )}
 
           {status === "succeeded" &&
             items.length > 0 &&
@@ -221,7 +255,7 @@ function DiscoverPage() {
                       pagination.page - 1
                     )
                   }
-                  className="rounded-lg border border-white/10 px-4 py-2.5 text-sm text-white/70 transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-30"
+                  className="rounded-lg border border-white/10 px-4 py-2.5 text-sm text-white/70 transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   Previous
                 </button>
@@ -242,7 +276,7 @@ function DiscoverPage() {
                       pagination.page + 1
                     )
                   }
-                  className="rounded-lg border border-white/10 px-4 py-2.5 text-sm text-white/70 transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-30"
+                  className="rounded-lg border border-white/10 px-4 py-2.5 text-sm text-white/70 transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
                 >
                   Next
                 </button>

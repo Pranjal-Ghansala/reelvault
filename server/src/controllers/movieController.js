@@ -3,6 +3,7 @@ import {
   searchMovies,
   getMovieDetails,
   getSimilarMovies,
+  getHomepageMovies,
 } from "../services/movieService.js";
 
 export async function discoverMoviesController(req, res, next) {
@@ -42,6 +43,17 @@ export async function getSimilarMoviesController(req, res, next) {
       req.validated.params.id,
       req.validated.query.page
     );
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+export async function getHomepageMoviesController(req, res, next) {
+  try {
+    const result = await getHomepageMovies();
 
     res.json(result);
   } catch (error) {

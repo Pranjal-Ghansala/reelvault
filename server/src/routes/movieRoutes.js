@@ -6,6 +6,7 @@ import {
   searchMoviesController,
   getMovieDetailsController,
   getSimilarMoviesController,
+   getHomepageMoviesController,
 } from "../controllers/movieController.js";
 
 import { validate } from "../middleware/validate.js";
@@ -56,6 +57,8 @@ router.get(
   validate(searchSchema, "query"),
   searchMoviesController
 );
+
+router.get("/homepage", getHomepageMoviesController);
 
 router.get(
   "/:id",
